@@ -17,16 +17,27 @@ using namespace std;
 using namespace cv;
 using namespace cv::detail;
 
-void initializeData(cv::Mat K, cv::Mat R, Ptr <RotationWarper> warper);
+float data_k[9] = { 1.2341799f,          0, 0,
+                    0,          1.2341799f, 0,
+                    0,                   0, 1 };
+
+float data_R[9] = { 0.97279942f,   0.033378981f, -78.555443f,
+                    -0.033378981f,   0.97279942,   195.70378,
+                    0,                        0, 1 };
+
+Ptr <RotationWarper> initializeData(Mat&K, Mat&R, Ptr <WarperCreator> warper_creator);
 
 int main(int argc, char *argv[])
 {
    cv::Mat img = cv::imread("4.jpg");
-   cv::Mat K, R;
-   Ptr <RotationWarper> warper;
+   cv::Mat K(3, 3, CV_32F), R;
 
-   initializeData(K,R,warper);
 
+   //prepare data and warper
+   Ptr <WarperCreator>  warper_creator = makePtr <cv::AffineWarper>();
+   Ptr <RotationWarper> warper         = initializeData(K, R, warper_creator);
+
+   //do warper on the original image
    cv::Mat   img_warped;
    cv::Point dst_roi = warper->warp(img, K, R, INTER_CUBIC, BORDER_CONSTANT, img_warped);
 
@@ -44,14 +55,12 @@ int main(int argc, char *argv[])
    cv::waitKey(0);
 }
 
-void initializeData(cv::Mat K, cv::Mat R, Ptr <RotationWarper> warper)
+Ptr <RotationWarper> initializeData(Mat&K, Mat&R, Ptr <WarperCreator> warper_creator)
 {
-   Ptr <WarperCreator> warper_creator = makePtr <cv::AffineWarper>();
-   float warped_image_scale           = 1;
-   float seam_work_aspect             = 1.2;
-   warper = warper_creator->create(static_cast <float>(warped_image_scale * seam_work_aspect));
-   float data_k[9] = { 1.2341799f, 0, 0, 0, 1.2341799f, 0, 0, 0, 1 };
-   float data_R[9] = { 0.97279942f, 0.033378981f, -78.555443f, -0.033378981f, 0.97279942, 195.70378, 0, 0, 1 };
    K = cv::Mat(3, 3, CV_32F, data_k);
    R = cv::Mat(3, 3, CV_32F, data_R);
+
+   float warped_image_scale = 1;
+   float seam_work_aspect   = 1.2;
+   return(warper_creator->create(static_cast <float>(warped_image_scale * seam_work_aspect)));
 }
