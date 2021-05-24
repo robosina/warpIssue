@@ -1,5 +1,5 @@
 ## What is the problem?
-You can see that there are two images after running code. I tried warping a point but it was not accurate. Debugging the Stitching code has provided inputs for the variables of this source code.
+You can see that there are two images after running code. I tried warping a point but it was not accurate. Debugging the Stitching code has provided inputs for this source code.
 
 ## original image
 ![Selection_218](https://user-images.githubusercontent.com/14973524/119262936-3d4f0280-bbf2-11eb-8257-64b5812338f6.png)
